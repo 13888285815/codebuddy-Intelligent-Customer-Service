@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>智能客服</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="chat-container">
+    <header class="chat-header">
+      <div class="header-info">
+        <h1>智能客服</h1>
+        <span class="status-dot"></span>
+        <span class="status-text">在线</span>
+        <span class="ai-status" id="aiStatus" style="display: none;">🤖 AI</span>
+      </div>
+      <div class="header-actions">
+        <button class="transfer-btn" onclick="transferToHuman()">转人工</button>
+        <button class="tools-btn" onclick="toggleTools()">常用工具</button>
+      </div>
+    </header>
+    
+    <!-- 常用工具面板 -->
+    <div class="tools-panel" id="toolsPanel">
+      <div class="tools-grid">
+        <button class="tool-item" onclick="openFileUpload()">
+          <span class="tool-icon">📷</span>
+          <span class="tool-label">图片/视频</span>
+        </button>
+        <button class="tool-item" onclick="captureScreen()">
+          <span class="tool-icon">🖥️</span>
+          <span class="tool-label">截屏</span>
+        </button>
+        <button class="tool-item" onclick="showEmojiPanel()">
+          <span class="tool-icon">😊</span>
+          <span class="tool-label">表情</span>
+        </button>
+        <button class="tool-item" onclick="showQuickPhrases()">
+          <span class="tool-icon">📝</span>
+          <span class="tool-label">常用语</span>
+        </button>
+        <button class="tool-item" onclick="showVoiceInput()">
+          <span class="tool-icon">🎤</span>
+          <span class="tool-label">语音输入</span>
+        </button>
+        <button class="tool-item" onclick="copySessionId()">
+          <span class="tool-icon">📋</span>
+          <span class="tool-label">复制会话</span>
+        </button>
+      </div>
+    </div>
+    
+    <!-- 表情面板 -->
+    <div class="emoji-panel" id="emojiPanel">
+      <div class="emoji-grid">
+        <button onclick="insertEmoji('😀')">😀</button>
+        <button onclick="insertEmoji('😃')">😃</button>
+        <button onclick="insertEmoji('😄')">😄</button>
+        <button onclick="insertEmoji('😁')">😁</button>
+        <button onclick="insertEmoji('😅')">😅</button>
+        <button onclick="insertEmoji('😂')">😂</button>
+        <button onclick="insertEmoji('🤣')">🤣</button>
+        <button onclick="insertEmoji('😊')">😊</button>
+        <button onclick="insertEmoji('😇')">😇</button>
+        <button onclick="insertEmoji('🙂')">🙂</button>
+        <button onclick="insertEmoji('😉')">😉</button>
+        <button onclick="insertEmoji('😌')">😌</button>
+        <button onclick="insertEmoji('😍')">😍</button>
+        <button onclick="insertEmoji('🥰')">🥰</button>
+        <button onclick="insertEmoji('😘')">😘</button>
+        <button onclick="insertEmoji('😋')">😋</button>
+        <button onclick="insertEmoji('😛')">😛</button>
+        <button onclick="insertEmoji('😜')">😜</button>
+        <button onclick="insertEmoji('🤪')">🤪</button>
+        <button onclick="insertEmoji('😝')">😝</button>
+        <button onclick="insertEmoji('🤑')">🤑</button>
+        <button onclick="insertEmoji('🤗')">🤗</button>
+        <button onclick="insertEmoji('🤭')">🤭</button>
+        <button onclick="insertEmoji('🤫')">🤫</button>
+        <button onclick="insertEmoji('🤔')">🤔</button>
+        <button onclick="insertEmoji('🤐')">🤐</button>
+        <button onclick="insertEmoji('🤨')">🤨</button>
+        <button onclick="insertEmoji('😐')">😐</button>
+        <button onclick="insertEmoji('😑')">😑</button>
+        <button onclick="insertEmoji('😶')">😶</button>
+        <button onclick="insertEmoji('😏')">😏</button>
+        <button onclick="insertEmoji('😒')">😒</button>
+        <button onclick="insertEmoji('🙄')">🙄</button>
+        <button onclick="insertEmoji('😬')">😬</button>
+        <button onclick="insertEmoji('😮')">😮</button>
+        <button onclick="insertEmoji('😯')">😯</button>
+        <button onclick="insertEmoji('😲')">😲</button>
+        <button onclick="insertEmoji('😳')">😳</button>
+        <button onclick="insertEmoji('🥺')">🥺</button>
+        <button onclick="insertEmoji('😦')">😦</button>
+        <button onclick="insertEmoji('😧')">😧</button>
+        <button onclick="insertEmoji('😨')">😨</button>
+        <button onclick="insertEmoji('😰')">😰</button>
+        <button onclick="insertEmoji('😥')">😥</button>
+        <button onclick="insertEmoji('😢')">😢</button>
+        <button onclick="insertEmoji('😭')">😭</button>
+        <button onclick="insertEmoji('😱')">😱</button>
+        <button onclick="insertEmoji('😖')">😖</button>
+        <button onclick="insertEmoji('😣')">😣</button>
+        <button onclick="insertEmoji('😞')">😞</button>
+        <button onclick="insertEmoji('😓')">😓</button>
+        <button onclick="insertEmoji('😩')">😩</button>
+        <button onclick="insertEmoji('😫')">😫</button>
+        <button onclick="insertEmoji('🥱')">🥱</button>
+        <button onclick="insertEmoji('😤')">😤</button>
+        <button onclick="insertEmoji('😡')">😡</button>
+        <button onclick="insertEmoji('😠')">😠</button>
+        <button onclick="insertEmoji('🤬')">🤬</button>
+        <button onclick="insertEmoji('👍')">👍</button>
+        <button onclick="insertEmoji('👎')">👎</button>
+        <button onclick="insertEmoji('👌')">👌</button>
+        <button onclick="insertEmoji('✌️')">✌️</button>
+        <button onclick="insertEmoji('🤞')">🤞</button>
+        <button onclick="insertEmoji('🤟')">🤟</button>
+        <button onclick="insertEmoji('🤘')">🤘</button>
+        <button onclick="insertEmoji('👋')">👋</button>
+        <button onclick="insertEmoji('🤚')">🤚</button>
+        <button onclick="insertEmoji('🖐️')">🖐️</button>
+        <button onclick="insertEmoji('✋')">✋</button>
+        <button onclick="insertEmoji('👆')">👆</button>
+        <button onclick="insertEmoji('👇')">👇</button>
+        <button onclick="insertEmoji('☝️')">☝️</button>
+        <button onclick="insertEmoji('👋')">👋</button>
+        <button onclick="insertEmoji('❤️')">❤️</button>
+        <button onclick="insertEmoji('💔')">💔</button>
+        <button onclick="insertEmoji('💯')">💯</button>
+        <button onclick="insertEmoji('🔥')">🔥</button>
+        <button onclick="insertEmoji('⭐')">⭐</button>
+        <button onclick="insertEmoji('✨')">✨</button>
+        <button onclick="insertEmoji('💪')">💪</button>
+        <button onclick="insertEmoji('🎉')">🎉</button>
+        <button onclick="insertEmoji('🎊')">🎊</button>
+        <button onclick="insertEmoji('🏆')">🏆</button>
+        <button onclick="insertEmoji('🎯')">🎯</button>
+        <button onclick="insertEmoji('💡')">💡</button>
+        <button onclick="insertEmoji('📌')">📌</button>
+        <button onclick="insertEmoji('✅')">✅</button>
+        <button onclick="insertEmoji('❌')">❌</button>
+        <button onclick="insertEmoji('⚠️')">⚠️</button>
+        <button onclick="insertEmoji('💻')">💻</button>
+        <button onclick="insertEmoji('📱')">📱</button>
+        <button onclick="insertEmoji('🔧')">🔧</button>
+        <button onclick="insertEmoji('🔨')">🔨</button>
+        <button onclick="insertEmoji('🛠️')">🛠️</button>
+        <button onclick="insertEmoji('📦')">📦</button>
+        <button onclick="insertEmoji('🚚')">🚚</button>
+        <button onclick="insertEmoji('💰')">💰</button>
+        <button onclick="insertEmoji('📞')">📞</button>
+        <button onclick="insertEmoji('📧')">📧</button>
+        <button onclick="insertEmoji('🔒')">🔒</button>
+        <button onclick="insertEmoji('🔑')">🔑</button>
+      </div>
+    </div>
+    
+    <!-- 常用语面板 -->
+    <div class="phrases-panel" id="phrasesPanel">
+      <h4>常用语</h4>
+      <div class="phrases-list">
+        <button onclick="sendQuickQuestion('我想退款')">我想退款</button>
+        <button onclick="sendQuickQuestion('查询订单物流')">查询订单物流</button>
+        <button onclick="sendQuickQuestion('商品质量问题')">商品质量问题</button>
+        <button onclick="sendQuickQuestion('修改收货地址')">修改收货地址</button>
+        <button onclick="sendQuickQuestion('如何使用优惠券？')">如何使用优惠券？</button>
+        <button onclick="sendQuickQuestion('账号无法登录')">账号无法登录</button>
+        <button onclick="sendQuickQuestion('联系人工客服')">联系人工客服</button>
+        <button onclick="sendQuickQuestion('谢谢，再见')">谢谢，再见</button>
+      </div>
+    </div>
+    
+    <!-- 语音输入面板 -->
+    <div class="voice-panel" id="voicePanel">
+      <div class="voice-wave">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <p>正在录音... 点击停止</p>
+      <button class="voice-stop-btn" onclick="stopVoiceInput()">停止</button>
+    </div>
+    
+    <div class="chat-messages" id="chatMessages">
+      <div class="welcome-message">
+        <div class="avatar">🤖</div>
+        <div class="message-content">
+          <p>您好！我是智能客服小助手，很高兴为您服务 👋</p>
+          <p>我可以帮您解答以下问题：</p>
+          <div class="quick-questions">
+            <button onclick="sendQuickQuestion('如何申请退款？')">💰 如何申请退款？</button>
+            <button onclick="sendQuickQuestion('订单什么时候发货？')">📦 订单什么时候发货？</button>
+            <button onclick="sendQuickQuestion('账号无法登录怎么办？')">🔐 账号无法登录怎么办？</button>
+            <button onclick="sendQuickQuestion('如何查看物流信息？')">🚚 如何查看物流信息？</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="chat-input-area">
+      <button class="attachment-btn" onclick="openFileUpload()" title="发送图片/视频">📎</button>
+      
+      <!-- AI 模型选择器 -->
+      <select id="aiModelSelect" class="ai-model-select" title="选择 AI 模型" onchange="onModelChange()">
+        <option value="demo">🎯 智能助手</option>
+        <option value="gpt-3.5-turbo">GPT-3.5</option>
+        <option value="gpt-4o">GPT-4o</option>
+        <option value="gpt-4-turbo">GPT-4 Turbo</option>
+        <option value="claude-3-haiku-20240307">Claude Haiku</option>
+        <option value="claude-3-sonnet-20240229">Claude Sonnet</option>
+        <option value="claude-3-opus-20240229">Claude Opus</option>
+        <option value="ernie-3.5-8k">文心一言 3.5</option>
+        <option value="ernie-4.0-8k">文心一言 4.0</option>
+        <option value="qwen-turbo">通义千问 Turbo</option>
+        <option value="qwen-plus">通义千问 Plus</option>
+        <option value="qwen-max">通义千问 Max</option>
+      </select>
+      
+      <input 
+        type="text" 
+        id="messageInput" 
+        placeholder="请输入您的问题..."
+        onkeypress="handleKeyPress(event)"
+      >
+      <button class="voice-input-btn" onclick="startVoiceInput()" title="语音输入">🎤</button>
+      <button class="send-btn" onclick="sendMessage()">发送</button>
+    </div>
+    
+    <!-- 文件上传输入框 -->
+    <input type="file" id="fileInput" accept="image/*,video/*" style="display: none;" onchange="handleFileSelect(event)">
+    
+    <!-- 满意度评价弹窗 -->
+    <div class="feedback-modal" id="feedbackModal">
+      <div class="feedback-content">
+        <h3>请您对本次服务进行评价</h3>
+        <div class="feedback-buttons">
+          <button class="feedback-btn satisfied" onclick="submitFeedback('satisfied')">
+            <span class="emoji">😊</span>
+            <span>满意</span>
+          </button>
+          <button class="feedback-btn dissatisfied" onclick="submitFeedback('dissatisfied')">
+            <span class="emoji">😞</span>
+            <span>不满意</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let sessionId = localStorage.getItem('chatSessionId');
+    let isTransferring = false;
+    let feedbackSubmitted = false;
+    let mediaRecorder = null;
+    let audioChunks = [];
+
+    // 发送快捷问题
+    function sendQuickQuestion(question) {
+      document.getElementById('messageInput').value = question;
+      sendMessage();
+      hideAllPanels();
+    }
+
+    // 处理回车键
+    function handleKeyPress(event) {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
+    }
+
+    // 发送消息
+    async function sendMessage() {
+      const input = document.getElementById('messageInput');
+      const message = input.value.trim();
+      
+      if (!message && !window.pendingFile) return;
+      
+      input.value = '';
+      hideAllPanels();
+      
+      // 添加用户消息
+      if (message) {
+        addMessage(message, 'user');
+      }
+      
+      // 检查是否是对话结束
+      if (message === '结束' || message === '结束对话') {
+        showFeedbackModal();
+        return;
+      }
+      
+      // 显示加载状态
+      const loadingMsg = addMessage('正在思考中...', 'assistant', true);
+      
+      // 获取选定的 AI 模型
+      const aiModel = document.getElementById('aiModelSelect').value;
+      
+      try {
+        const formData = new FormData();
+        formData.append('session_id', sessionId || '');
+        formData.append('message', message || '');
+        formData.append('user_id', 'user_' + Date.now());
+        formData.append('ai_model', aiModel);
+        
+        if (window.pendingFile) {
+          formData.append('file', window.pendingFile);
+          window.pendingFile = null;
+        }
+        
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          body: formData
+        });
+        
+        const data = await response.json();
+        
+        sessionId = data.session_id;
+        localStorage.setItem('chatSessionId', data.session_id);
+        
+        loadingMsg.remove();
+        
+        addMessage(data.message, 'assistant');
+        
+        if (data.should_transfer) {
+          isTransferring = true;
+        }
+        
+      } catch (error) {
+        loadingMsg.remove();
+        addMessage('抱歉，服务出了点问题，请稍后再试。', 'assistant');
+      }
+    }
+
+    // 添加消息到界面
+    function addMessage(content, role, isLoading = false) {
+      const messagesContainer = document.getElementById('chatMessages');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${role}`;
+      
+      const avatar = role === 'assistant' ? '🤖' : '👤';
+      const time = new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+      
+      // 处理图片和视频
+      let mediaContent = '';
+      if (role === 'user' && window.lastFilePath) {
+        const isVideo = window.lastFilePath.match(/\.(mp4|webm|ogg)$/i);
+        if (isVideo) {
+          mediaContent = `<video src="${window.lastFilePath}" controls class="message-media"></video>`;
+        } else {
+          mediaContent = `<img src="${window.lastFilePath}" alt="发送的图片" class="message-media">`;
+        }
+        window.lastFilePath = null;
+      }
+      
+      messageDiv.innerHTML = `
+        <div class="avatar">${avatar}</div>
+        <div class="message-content">
+          ${mediaContent}
+          ${isLoading ? '<span class="loading-dots"></span>' : `<p>${content.replace(/\n/g, '<br>')}</p>`}
+          <span class="time">${time}</span>
+        </div>
+      `;
+      
+      messagesContainer.appendChild(messageDiv);
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      
+      return messageDiv;
+    }
+
+    // 转人工
+    function transferToHuman() {
+      if (isTransferring) return;
+      document.getElementById('messageInput').value = '请转人工客服';
+      sendMessage();
+    }
+
+    // 切换常用工具面板
+    function toggleTools() {
+      const panel = document.getElementById('toolsPanel');
+      panel.classList.toggle('show');
+      hideAllPanels();
+    }
+
+    // 隐藏所有面板
+    function hideAllPanels() {
+      document.getElementById('toolsPanel').classList.remove('show');
+      document.getElementById('emojiPanel').classList.remove('show');
+      document.getElementById('phrasesPanel').classList.remove('show');
+      document.getElementById('voicePanel').classList.remove('show');
+    }
+
+    // 打开文件上传
+    function openFileUpload() {
+      document.getElementById('fileInput').click();
+      hideAllPanels();
+    }
+
+    // 处理文件选择
+    function handleFileSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      window.pendingFile = file;
+      
+      // 显示预览
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        window.lastFilePath = e.target.result;
+      };
+      reader.readAsDataURL(file);
+      
+      // 显示文件消息
+      if (file.type.startsWith('image/')) {
+        addMessage(`[图片] ${file.name}`, 'user');
+      } else if (file.type.startsWith('video/')) {
+        addMessage(`[视频] ${file.name}`, 'user');
+      }
+      
+      // 自动发送
+      sendMessage();
+      event.target.value = '';
+    }
+
+    // 截屏功能
+    async function captureScreen() {
+      try {
+        const stream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+        const track = stream.getVideoTracks()[0];
+        const imageCapture = new ImageCapture(track);
+        const blob = await imageCapture.takePhoto();
+        
+        window.pendingFile = new File([blob], 'screenshot.png', { type: 'image/png' });
+        window.lastFilePath = URL.createObjectURL(blob);
+        addMessage('[截屏]', 'user');
+        sendMessage();
+        
+        track.stop();
+        hideAllPanels();
+      } catch (error) {
+        alert('截屏功能需要浏览器授权');
+      }
+    }
+
+    // 显示表情面板
+    function showEmojiPanel() {
+      hideAllPanels();
+      document.getElementById('emojiPanel').classList.add('show');
+    }
+
+    // 插入表情
+    function insertEmoji(emoji) {
+      const input = document.getElementById('messageInput');
+      input.value += emoji;
+      input.focus();
+    }
+
+    // 显示常用语面板
+    function showQuickPhrases() {
+      hideAllPanels();
+      document.getElementById('phrasesPanel').classList.add('show');
+    }
+
+    // 语音输入
+    function startVoiceInput() {
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('您的浏览器不支持语音输入功能');
+        return;
+      }
+      
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const recognition = new SpeechRecognition();
+      
+      recognition.lang = 'zh-CN';
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      
+      document.getElementById('voicePanel').classList.add('show');
+      
+      recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById('messageInput').value += transcript;
+        document.getElementById('voicePanel').classList.remove('show');
+      };
+      
+      recognition.onerror = function() {
+        document.getElementById('voicePanel').classList.remove('show');
+        alert('语音识别失败，请重试');
+      };
+      
+      recognition.start();
+    }
+
+    function stopVoiceInput() {
+      document.getElementById('voicePanel').classList.remove('show');
+    }
+
+    // 复制会话ID
+    function copySessionId() {
+      if (sessionId) {
+        navigator.clipboard.writeText(sessionId);
+        alert('会话ID已复制: ' + sessionId);
+      } else {
+        alert('暂无会话ID');
+      }
+      hideAllPanels();
+    }
+
+    // 显示满意度评价弹窗
+    function showFeedbackModal() {
+      if (feedbackSubmitted) return;
+      document.getElementById('feedbackModal').classList.add('show');
+    }
+
+    // 提交满意度评价
+    async function submitFeedback(rating) {
+      if (!sessionId || feedbackSubmitted) return;
+      
+      feedbackSubmitted = true;
+      document.getElementById('feedbackModal').classList.remove('show');
+      
+      try {
+        await fetch(`/api/sessions/${sessionId}/feedback`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rating })
+        });
+        
+        addMessage('感谢您的评价！如有问题，欢迎随时咨询。', 'assistant');
+      } catch (error) {
+        console.error('提交评价失败:', error);
+      }
+    }
+
+    // 加载历史消息
+    async function loadHistory() {
+      if (!sessionId) return;
+      
+      try {
+        // 不需要验证即可加载自己的历史
+        const response = await fetch(`/api/sessions/${sessionId}`);
+        const data = await response.json();
+        
+        if (data.messages && data.messages.length > 0) {
+          document.querySelector('.welcome-message').style.display = 'none';
+          
+          data.messages.forEach(msg => {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${msg.role}`;
+            
+            let mediaContent = '';
+            if (msg.file_path && msg.role === 'user') {
+              if (msg.content_type === 'video') {
+                mediaContent = `<video src="${msg.file_path}" controls class="message-media"></video>`;
+              } else {
+                mediaContent = `<img src="${msg.file_path}" alt="图片" class="message-media">`;
+              }
+            }
+            
+            msgDiv.innerHTML = `
+              <div class="avatar">${msg.role === 'assistant' ? '🤖' : '👤'}</div>
+              <div class="message-content">
+                ${mediaContent}
+                <p>${msg.content.replace(/\n/g, '<br>')}</p>
+                <span class="time">${new Date(msg.created_at).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}</span>
+              </div>
+            `;
+            document.getElementById('chatMessages').appendChild(msgDiv);
+          });
+          
+          if (data.session.status === 'completed') {
+            showFeedbackModal();
+          }
+        }
+      } catch (error) {
+        console.error('加载历史消息失败:', error);
+      }
+    }
+
+    // 检查 AI 状态
+    async function checkAIStatus() {
+      try {
+        const response = await fetch('/api/ai/status');
+        const data = await response.json();
+        
+        if (data.aiEnabled) {
+          const aiStatus = document.getElementById('aiStatus');
+          aiStatus.style.display = 'inline-flex';
+          
+          if (data.isDemoMode) {
+            aiStatus.textContent = '🎯 智能助手';
+            aiStatus.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+            aiStatus.title = '演示模式 - 无需 API Key 即可体验';
+          } else {
+            aiStatus.textContent = '🤖 AI';
+            aiStatus.title = data.providerName + ' 已启用';
+          }
+        }
+      } catch (error) {}
+    }
+    
+    // AI 模型切换提示
+    function onModelChange() {
+      const select = document.getElementById('aiModelSelect');
+      const model = select.value;
+      
+      // 演示模式无需提示
+      if (model === 'demo') return;
+      
+      // 非演示模式需要 API Key
+      fetch('/api/ai/status')
+        .then(res => res.json())
+        .then(data => {
+          if (!data.aiEnabled || data.isDemoMode) {
+            // 显示提示
+            const tips = document.createElement('div');
+            tips.className = 'ai-tip-toast';
+            tips.innerHTML = `⚠️ 当前为演示模式，选择 ${select.options[select.selectedIndex].text} 需要配置 API Key。<br><a href="/admin" target="_blank">前往管理后台配置</a>`;
+            tips.style.cssText = 'position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 12px 20px; border-radius: 10px; font-size: 13px; z-index: 1000; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.2);';
+            document.body.appendChild(tips);
+            
+            // 3秒后移除提示
+            setTimeout(() => tips.remove(), 5000);
+          }
+        });
+    }
+
+    window.onload = function() {
+      checkAIStatus();
+      loadHistory();
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>简单登录测试</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin: 0;
+    }
+    .login-box {
+      background: white;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 400px;
+    }
+    .login-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .login-header h1 {
+      color: #1F2937;
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #374151;
+      font-weight: 500;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #E5E7EB;
+      border-radius: 8px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .login-btn:hover {
+      transform: translateY(-2px);
+    }
+    .error {
+      color: #EF4444;
+      background: #FEE2E2;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    .success {
+      color: #10B981;
+      background: #D1FAE5;
+      padding: 10px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+    .info {
+      text-align: center;
+      margin-top: 20px;
+      color: #6B7280;
+      font-size: 12px;
+    }
+    .debug {
+      background: #F3F4F6;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-family: monospace;
+      font-size: 12px;
+      overflow: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <div class="login-header">
+      <h1>🔐 管理后台登录</h1>
+      <p>智能客服管理系统</p>
+    </div>
+    
+    <div id="message"></div>
+    
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">用户名</label>
+        <input type="text" id="username" name="username" placeholder="请输入用户名" required value="admin">
+      </div>
+      <div class="form-group">
+        <label for="password">密码</label>
+        <input type="password" id="password" name="password" placeholder="请输入密码" required value="admin123">
+      </div>
+      <button type="submit" class="login-btn">登录</button>
+    </form>
+    
+    <div class="info">
+      默认账号: admin / admin123
+    </div>
+    
+    <div class="debug" id="debug" style="display: none;"></div>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const messageDiv = document.getElementById('message');
+    const debugDiv = document.getElementById('debug');
+
+    function showMessage(message, isError = false) {
+      messageDiv.className = isError ? 'error' : 'success';
+      messageDiv.textContent = message;
+    }
+
+    function showDebug(message) {
+      debugDiv.style.display = 'block';
+      debugDiv.textContent += message + '\n';
+    }
+
+    // 清空调试信息
+    debugDiv.textContent = '';
+
+    loginForm.addEventListener('submit', async function(event) {
+      event.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const loginBtn = loginForm.querySelector('button');
+      
+      showDebug('开始登录...');
+      showDebug(`用户名: ${username}`);
+      showDebug(`密码长度: ${password.length}`);
+      
+      loginBtn.disabled = true;
+      loginBtn.textContent = '登录中...';
+      showMessage('正在登录...');
+      
+      try {
+        showDebug('发送请求到 /api/admin/login');
+        
+        const response = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
+        });
+        
+        showDebug(`HTTP 状态: ${response.status} ${response.statusText}`);
+        
+        const data = await response.json();
+        showDebug(`响应数据: ${JSON.stringify(data)}`);
+        
+        if (response.ok && data.success) {
+          showDebug('登录成功!');
+          
+          localStorage.setItem('adminToken', data.token);
+          localStorage.setItem('adminUsername', data.username);
+          
+          showMessage('登录成功! 正在跳转...', false);
+          
+          setTimeout(() => {
+            window.location.href = '/admin';
+          }, 1000);
+        } else {
+          showDebug('登录失败!');
+          const errorMsg = data.error || '未知错误';
+          showMessage(`登录失败: ${errorMsg}`, true);
+        }
+        
+      } catch (error) {
+        showDebug(`错误: ${error.message}`);
+        showMessage(`网络错误: ${error.message}`, true);
+      } finally {
+        loginBtn.disabled = false;
+        loginBtn.textContent = '登录';
+      }
+    });
+  </script>
+</body>
+</html>

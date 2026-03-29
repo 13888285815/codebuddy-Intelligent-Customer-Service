@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>登录诊断</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    .test { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+    .success { background-color: #d4edda; border-color: #c3e6cb; }
+    .error { background-color: #f8d7da; border-color: #f5c6cb; }
+    .info { background-color: #d1ecf1; border-color: #bee5eb; }
+    pre { background: #f5f5f5; padding: 10px; border-radius: 3px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>🔍 管理后台登录诊断</h1>
+  
+  <div class="test info">
+    <h3>1. 测试服务器连接</h3>
+    <div id="serverStatus">检查中...</div>
+  </div>
+  
+  <div class="test info">
+    <h3>2. 测试登录 API</h3>
+    <button onclick="testLogin()">测试登录</button>
+    <div id="loginResult"></div>
+  </div>
+  
+  <div class="test info">
+    <h3>3. 检查响应头</h3>
+    <button onclick="checkHeaders()">检查响应头</button>
+    <pre id="headersResult"></pre>
+  </div>
+  
+  <div class="test info">
+    <h3>4. 手动登录表单</h3>
+    <form onsubmit="manualLogin(event)">
+      <input type="text" id="username" placeholder="用户名 (admin)" value="admin" style="margin: 5px; padding: 5px;">
+      <input type="password" id="password" placeholder="密码 (admin123)" value="admin123" style="margin: 5px; padding: 5px;">
+      <button type="submit" style="padding: 5px;">登录</button>
+    </form>
+    <div id="manualResult"></div>
+  </div>
+
+  <script>
+    // 1. 测试服务器连接
+    async function checkServer() {
+      try {
+        const response = await fetch('/');
+        const statusDiv = document.getElementById('serverStatus');
+        statusDiv.className = response.ok ? 'test success' : 'test error';
+        statusDiv.textContent = `✓ 服务器在线 (HTTP ${response.status})`;
+      } catch (error) {
+        document.getElementById('serverStatus').className = 'test error';
+        document.getElementById('serverStatus').textContent = `✗ 服务器离线: ${error.message}`;
+      }
+    }
+
+    // 2. 测试登录 API
+    async function testLogin() {
+      const resultDiv = document.getElementById('loginResult');
+      resultDiv.textContent = '测试中...';
+      
+      try {
+        const response = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: 'admin', password: 'admin123' })
+        });
+        
+        const data = await response.json();
+        resultDiv.className = response.ok ? 'test success' : 'test error';
+        
+        resultDiv.innerHTML = `
+          <p>状态: ${response.ok ? '✓ 成功' : '✗ 失败'} (HTTP ${response.status})</p>
+          <p>响应:</p>
+          <pre>${JSON.stringify(data, null, 2)}</pre>
+        `;
+      } catch (error) {
+        resultDiv.className = 'test error';
+        resultDiv.textContent = `✗ 请求失败: ${error.message}`;
+      }
+    }
+
+    // 3. 检查响应头
+    async function checkHeaders() {
+      try {
+        const response = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: 'admin', password: 'admin123' })
+        });
+        
+        const headers = {};
+        response.headers.forEach((value, key) => {
+          headers[key] = value;
+        });
+        
+        const data = await response.json();
+        
+        document.getElementById('headersResult').textContent = 
+          `响应头:\n${JSON.stringify(headers, null, 2)}\n\n响应数据:\n${JSON.stringify(data, null, 2)}`;
+      } catch (error) {
+        document.getElementById('headersResult').textContent = `错误: ${error.message}`;
+      }
+    }
+
+    // 4. 手动登录
+    async function manualLogin(event) {
+      event.preventDefault();
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const resultDiv = document.getElementById('manualResult');
+      
+      resultDiv.textContent = '登录中...';
+      
+      try {
+        const response = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          resultDiv.className = 'test success';
+          resultDiv.innerHTML = `
+            <p>✓ 登录成功!</p>
+            <p>Token: ${data.token.substring(0, 32)}...</p>
+            <p>用户名: ${data.username}</p>
+            <button onclick="saveToken('${data.token}')">保存 Token 到 localStorage</button>
+          `;
+        } else {
+          resultDiv.className = 'test error';
+          resultDiv.textContent = `✗ 登录失败: ${data.error || '未知错误'}`;
+        }
+      } catch (error) {
+        resultDiv.className = 'test error';
+        resultDiv.textContent = `✗ 请求失败: ${error.message}`;
+      }
+    }
+
+    function saveToken(token) {
+      localStorage.setItem('adminToken', token);
+      alert('Token 已保存! 现在可以访问 /admin');
+      window.location.href = '/admin';
+    }
+
+    // 页面加载时检查服务器
+    checkServer();
+  </script>
+</body>
+</html>

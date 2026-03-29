@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能客服 - 多版本演示</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      color: white;
+      margin-bottom: 40px;
+      padding: 40px 0;
+    }
+
+    header h1 {
+      font-size: 3em;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    header p {
+      font-size: 1.2em;
+      opacity: 0.9;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 8px 20px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 20px;
+      margin-top: 20px;
+      font-size: 0.9em;
+    }
+
+    .status-badge.online {
+      background: rgba(16, 185, 129, 0.3);
+      color: #10B981;
+    }
+
+    .versions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .version-card {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .version-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+
+    .version-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+
+    .version-icon {
+      font-size: 3em;
+      margin-bottom: 15px;
+    }
+
+    .version-card h2 {
+      font-size: 1.5em;
+      color: #1F2937;
+      margin-bottom: 10px;
+    }
+
+    .version-card .description {
+      color: #6B7280;
+      font-size: 0.95em;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .version-card .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.85em;
+      font-weight: 500;
+      margin-bottom: 15px;
+    }
+
+    .version-card .status.running {
+      background: #D1FAE5;
+      color: #059669;
+    }
+
+    .version-card .status.stopped {
+      background: #FEE2E2;
+      color: #DC2626;
+    }
+
+    .version-card .port {
+      color: #6B7280;
+      font-size: 0.85em;
+      margin-bottom: 15px;
+    }
+
+    .version-card .port code {
+      background: #F3F4F6;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'Monaco', 'Menlo', monospace;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 0.9em;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .features {
+      list-style: none;
+      margin: 15px 0;
+    }
+
+    .features li {
+      padding: 5px 0;
+      color: #4B5563;
+      font-size: 0.9em;
+    }
+
+    .features li::before {
+      content: '✓';
+      color: #10B981;
+      margin-right: 8px;
+      font-weight: bold;
+    }
+
+    .api-demo {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-top: 40px;
+    }
+
+    .api-demo h2 {
+      margin-bottom: 20px;
+      color: #1F2937;
+    }
+
+    .api-demo textarea {
+      width: 100%;
+      min-height: 150px;
+      padding: 15px;
+      border: 2px solid #E5E7EB;
+      border-radius: 8px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.9em;
+      margin-bottom: 15px;
+      resize: vertical;
+    }
+
+    .api-demo textarea:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .api-demo .response {
+      background: #F9FAFB;
+      padding: 15px;
+      border-radius: 8px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.85em;
+      min-height: 100px;
+      margin-bottom: 15px;
+    }
+
+    .api-demo .controls {
+      display: flex;
+      gap: 10px;
+    }
+
+    .widget-demo {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-top: 40px;
+    }
+
+    .widget-demo h2 {
+      margin-bottom: 20px;
+      color: #1F2937;
+    }
+
+    .widget-demo .code-block {
+      background: #1F2937;
+      color: #F9FAFB;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      font-size: 0.85em;
+      overflow-x: auto;
+    }
+
+    .instructions {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-top: 40px;
+    }
+
+    .instructions h2 {
+      margin-bottom: 20px;
+      color: #1F2937;
+    }
+
+    .instructions ol {
+      padding-left: 20px;
+    }
+
+    .instructions li {
+      margin: 10px 0;
+      color: #4B5563;
+      line-height: 1.6;
+    }
+
+    .instructions code {
+      background: #F3F4F6;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'Monaco', 'Menlo', monospace;
+      color: #DC2626;
+    }
+
+    footer {
+      text-align: center;
+      color: white;
+      margin-top: 60px;
+      padding: 40px 0;
+      opacity: 0.9;
+    }
+
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 2em;
+      }
+
+      .versions-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🤖 智能客服多版本演示</h1>
+      <p>探索不同版本的智能客服集成方案</p>
+      <div class="status-badge online" id="overallStatus">
+        ⏳ 正在检查服务状态...
+      </div>
+    </header>
+
+    <div class="versions-grid">
+      <!-- Web 版 -->
+      <div class="version-card">
+        <div class="version-icon">🌐</div>
+        <h2>Web 版</h2>
+        <p class="description">完整的客服对话界面，支持文件上传、语音输入、表情等功能。</p>
+        <div class="status running">运行中</div>
+        <p class="port">端口: <code>3000</code></p>
+        <ul class="features">
+          <li>完整的用户界面</li>
+          <li>管理后台</li>
+          <li>AI 集成</li>
+          <li>对话历史</li>
+        </ul>
+        <a href="http://localhost:3000" target="_blank" class="btn">打开客服界面</a>
+        <a href="http://localhost:3000/admin" target="_blank" class="btn" style="margin-left: 10px;">管理后台</a>
+      </div>
+
+      <!-- API 版 -->
+      <div class="version-card">
+        <div class="version-icon">📡</div>
+        <h2>API 版</h2>
+        <p class="description">RESTful API 接口，支持第三方应用集成，提供完整的 API 文档。</p>
+        <div class="status running">运行中</div>
+        <p class="port">端口: <code>3001</code></p>
+        <ul class="features">
+          <li>RESTful API</li>
+          <li>WebSocket 实时通信</li>
+          <li>API Key 认证</li>
+          <li>请求限流</li>
+        </ul>
+        <a href="http://localhost:3001/health" target="_blank" class="btn">查看健康状态</a>
+      </div>
+
+      <!-- Agent 版 -->
+      <div class="version-card">
+        <div class="version-icon">🤖</div>
+        <h2>Agent 版</h2>
+        <p class="description">企业级 AI Agent 服务，支持多 Agent 协作和任务编排。</p>
+        <div class="status running">运行中</div>
+        <p class="port">端口: <code>3002</code></p>
+        <ul class="features">
+          <li>多 Agent 协作</li>
+          <li>工作流编排</li>
+          <li>插件系统</li>
+          <li>分布式部署</li>
+        </ul>
+        <a href="http://localhost:3002/health" target="_blank" class="btn">查看 Agent 状态</a>
+      </div>
+
+      <!-- Widget 版 -->
+      <div class="version-card">
+        <div class="version-icon">🎨</div>
+        <h2>Widget 版</h2>
+        <p class="description">可嵌入任何网站的客服组件，即插即用，无需后端依赖。</p>
+        <div class="status running">可用</div>
+        <p class="port">无需服务器</p>
+        <ul class="features">
+          <li>即插即用</li>
+          <li>自定义样式</li>
+          <li>响应式设计</li>
+          <li>深色主题</li>
+        </ul>
+        <button class="btn" onclick="window.location.href='/widget-demo.html'">查看演示</button>
+      </div>
+
+      <!-- Skill 版 -->
+      <div class="version-card">
+        <div class="version-icon">🔌</div>
+        <h2>Skill 版</h2>
+        <p class="description">支持多种平台集成，包括 CodeBuddy、LangChain、Rasa 等。</p>
+        <div class="status running">可用</div>
+        <p class="port">跨平台</p>
+        <ul class="features">
+          <li>多平台支持</li>
+          <li>统一接口</li>
+          <li>灵活调用</li>
+          <li>完整示例</li>
+        </ul>
+        <button class="btn" onclick="showSkillDemo()">查看集成示例</button>
+      </div>
+
+      <!-- App 版 -->
+      <div class="version-card">
+        <div class="version-icon">📱</div>
+        <h2>App 版</h2>
+        <p class="description">移动应用版本，支持 React Native、Flutter 和原生开发。</p>
+        <div class="status stopped">开发中</div>
+        <p class="port">待发布</p>
+        <ul class="features">
+          <li>React Native</li>
+          <li>Flutter</li>
+          <li>原生 iOS/Android</li>
+          <li>推送通知</li>
+        </ul>
+        <button class="btn" disabled>敬请期待</button>
+      </div>
+    </div>
+
+    <!-- API 演示 -->
+    <div class="api-demo">
+      <h2>📡 API 版演示</h2>
+      <p style="margin-bottom: 15px; color: #6B7280;">测试 API 接口，发送消息获取 AI 回复</p>
+      <textarea id="apiRequest" placeholder='{"message": "我想退款", "use_ai": true}'></textarea>
+      <div class="controls">
+        <button class="btn" onclick="testAPI()">发送请求</button>
+        <button class="btn" onclick="generateAPIKey()" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%);">生成 API Key</button>
+      </div>
+      <div class="response" id="apiResponse">响应将显示在这里...</div>
+    </div>
+
+    <!-- Widget 演示 -->
+    <div class="widget-demo" id="widgetDemo" style="display: none;">
+      <h2>🎨 Widget 版集成代码</h2>
+      <p style="margin-bottom: 15px; color: #6B7280;">复制以下代码到您的网站即可集成</p>
+      <div class="code-block">
+&lt;!-- 引入 Widget --&gt;
+&lt;script src="https://your-domain.com/widget.js"&gt;&lt;/script&gt;
+
+&lt;!-- 初始化 --&gt;
+&lt;script&gt;
+  CustomerServiceWidget.init({
+    apiKey: 'your-api-key',
+    theme: 'light',
+    position: 'right',
+    primaryColor: '#4F46E5'
+  });
+&lt;/script&gt;
+      </div>
+    </div>
+
+    <!-- Skill 演示 -->
+    <div class="widget-demo" id="skillDemo" style="display: none;">
+      <h2>🔌 Skill 版集成示例</h2>
+      <p style="margin-bottom: 15px; color: #6B7280;">选择您要集成的平台</p>
+      <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+        <button class="btn" onclick="showPlatformCode('langchain')">LangChain</button>
+        <button class="btn" onclick="showPlatformCode('rasa')">Rasa</button>
+        <button class="btn" onclick="showPlatformCode('openai')">OpenAI GPTs</button>
+        <button class="btn" onclick="showPlatformCode('autogpt')">AutoGPT</button>
+      </div>
+      <div class="code-block" id="platformCode">
+        选择一个平台查看集成代码
+      </div>
+    </div>
+
+    <!-- 使用说明 -->
+    <div class="instructions">
+      <h2>📖 使用说明</h2>
+      <ol>
+        <li><strong>Web 版</strong>：直接点击"打开客服界面"按钮，体验完整的客服功能。</li>
+        <li><strong>API 版</strong>：使用上方的 API 测试工具，或查看 <code>versions/api/README.md</code> 获取完整文档。</li>
+        <li><strong>Agent 版</strong>：访问 Agent 服务健康检查，或查看 <code>versions/agent/README.md</code> 了解更多功能。</li>
+        <li><strong>Widget 版</strong>：点击"查看演示"获取集成代码，参考 <code>versions/widget/README.md</code> 进行配置。</li>
+        <li><strong>Skill 版</strong>：点击"查看集成示例"选择目标平台，参考 <code>versions/skill/README.md</code> 进行集成。</li>
+        <li><strong>App 版</strong>：目前正在开发中，敬请期待！</li>
+      </ol>
+      <p style="margin-top: 20px; color: #6B7280;">
+        详细文档请查看：<code>versions/README.md</code> 和 <code>DEPLOYMENT.md</code>
+      </p>
+    </div>
+
+    <footer>
+      <p>智能客服系统 © 2024 | 多版本集成方案</p>
+    </footer>
+  </div>
+
+  <script>
+    let currentApiKey = '';
+
+    function testAPI() {
+      const requestText = document.getElementById('apiRequest').value;
+      const responseDiv = document.getElementById('apiResponse');
+      
+      try {
+        const request = JSON.parse(requestText);
+        
+        responseDiv.textContent = '发送中...';
+        
+        // 先生成 API Key 如果还没有
+        if (!currentApiKey) {
+          generateAPIKey().then(() => {
+            sendAPIRequest(request, responseDiv);
+          });
+        } else {
+          sendAPIRequest(request, responseDiv);
+        }
+      } catch (error) {
+        responseDiv.textContent = 'JSON 格式错误: ' + error.message;
+      }
+    }
+
+    function sendAPIRequest(request, responseDiv) {
+      fetch('http://localhost:3001/api/v1/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': currentApiKey ? `Bearer ${currentApiKey}` : ''
+        },
+        body: JSON.stringify(request)
+      })
+      .then(response => response.json())
+      .then(data => {
+        const result = {
+          status: 'success',
+          session_id: data.data?.session_id,
+          message: data.data?.message,
+          intent: data.data?.intent,
+          ai_used: data.data?.ai_used,
+          timestamp: new Date().toISOString()
+        };
+        responseDiv.textContent = JSON.stringify(result, null, 2);
+      })
+      .catch(error => {
+        responseDiv.textContent = '错误: ' + error.message + '\n\n提示：请确保 API 服务正在运行（端口 3001）';
+      });
+    }
+
+    async function generateAPIKey() {
+      const responseDiv = document.getElementById('apiResponse');
+      
+      try {
+        responseDiv.textContent = '生成中...';
+        
+        const response = await fetch('http://localhost:3001/api/v1/api-keys', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId: 'demo_user_' + Date.now()
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          currentApiKey = data.data.api_key;
+          responseDiv.textContent = 
+            '✅ API Key 已生成！\n\n' +
+            'API Key: ' + data.data.api_key + '\n' +
+            '用户 ID: ' + data.data.user_id + '\n\n' +
+            '您现在可以使用此 API Key 进行测试了！';
+        } else {
+          responseDiv.textContent = '生成失败: ' + data.error;
+        }
+      } catch (error) {
+        responseDiv.textContent = '错误: ' + error.message;
+      }
+    }
+
+    function showWidgetDemo() {
+      const widgetDemo = document.getElementById('widgetDemo');
+      widgetDemo.style.display = widgetDemo.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function showSkillDemo() {
+      const skillDemo = document.getElementById('skillDemo');
+      skillDemo.style.display = skillDemo.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function showPlatformCode(platform) {
+      const codeBlock = document.getElementById('platformCode');
+      
+      const codes = {
+        langchain: `// LangChain 集成
+import { Tool } from 'langchain/tools';
+
+class CustomerServiceTool extends Tool {
+  name = 'customer_service';
+  description = '智能客服工具';
+
+  async _call(query) {
+    const response = await fetch('http://localhost:3001/api/v1/chat', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer YOUR_API_KEY',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ message: query, use_ai: true })
+    });
+    
+    const data = await response.json();
+    return data.data.message;
+  }
+}
+
+// 使用
+const tool = new CustomerServiceTool();
+const result = await tool.call('我想退款');`,
+
+        rasa: `# Rasa Action
+from rasa_sdk import Action
+import requests
+
+class ActionCustomerService(Action):
+    def name(self):
+        return "action_customer_service"
+    
+    def run(self, dispatcher, tracker, domain):
+        message = tracker.latest_message.get("text")
+        
+        response = requests.post(
+            "http://localhost:3001/api/v1/chat",
+            json={"message": message, "use_ai": True},
+            headers={"Authorization": "Bearer YOUR_API_KEY"}
+        )
+        
+        reply = response.json()["data"]["message"]
+        dispatcher.utter_message(text=reply)
+        
+        return []`,
+
+        openai: `// OpenAI GPTs Plugin
+{
+  "schema_version": "v1",
+  "name_for_human": "智能客服",
+  "name_for_model": "customer_service",
+  "description_for_human": "帮助用户解答客服相关问题",
+  "description_for_model": "用于处理客户服务咨询的插件。",
+  "auth": {
+    "type": "user_http",
+    "authorization_type": "bearer"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://your-domain.com/openapi.yaml"
+  }
+}`,
+
+        autogpt: `# AutoGPT Plugin
+import requests
+
+class CustomerServicePlugin:
+    def __init__(self, api_key):
+        self.api_key = api_key
+        self.base_url = "http://localhost:3001/v1"
+    
+    def handle_query(self, message):
+        headers = {"Authorization": f"Bearer {self.api_key}"}
+        data = {"message": message, "use_ai": True}
+        
+        response = requests.post(
+            f"{self.base_url}/chat",
+            json=data,
+            headers=headers
+        )
+        
+        if response.status_code == 200:
+            return response.json()["data"]["message"]
+        else:
+            return f"Error: {response.json()['error']}"
+
+# 使用
+plugin = CustomerServicePlugin(api_key="your-api-key")
+result = plugin.handle_query("我想退款")`
+      };
+      
+      codeBlock.textContent = codes[platform] || '选择一个平台查看集成代码';
+    }
+
+    // 自动填充示例请求
+    document.getElementById('apiRequest').value = JSON.stringify({
+      message: '我想退款',
+      use_ai: true
+    }, null, 2);
+
+    // 检查服务状态
+    async function checkServiceStatus() {
+      const overallStatus = document.getElementById('overallStatus');
+      const versionCards = document.querySelectorAll('.version-card');
+      
+      const services = [
+        { name: 'web', url: 'http://localhost:3000', cardIndex: 0 },
+        { name: 'api', url: 'http://localhost:3001/health', cardIndex: 1 },
+        { name: 'agent', url: 'http://localhost:3002/health', cardIndex: 2 }
+      ];
+
+      let allRunning = true;
+
+      for (const service of services) {
+        try {
+          const response = await fetch(service.url, { method: 'GET' });
+          const isRunning = response.ok;
+
+          if (isRunning) {
+            const statusBadge = versionCards[service.cardIndex].querySelector('.status');
+            statusBadge.textContent = '运行中';
+            statusBadge.className = 'status running';
+          } else {
+            allRunning = false;
+            const statusBadge = versionCards[service.cardIndex].querySelector('.status');
+            statusBadge.textContent = '未运行';
+            statusBadge.className = 'status stopped';
+          }
+        } catch (error) {
+          allRunning = false;
+          const statusBadge = versionCards[service.cardIndex].querySelector('.status');
+          statusBadge.textContent = '未运行';
+          statusBadge.className = 'status stopped';
+        }
+      }
+
+      if (allRunning) {
+        overallStatus.textContent = '✓ 所有服务运行正常';
+        overallStatus.className = 'status-badge online';
+      } else {
+        overallStatus.textContent = '⚠️ 部分服务未运行';
+        overallStatus.className = 'status-badge';
+      }
+    }
+
+    // 页面加载时检查服务状态
+    checkServiceStatus();
+  </script>
+</body>
+</html>

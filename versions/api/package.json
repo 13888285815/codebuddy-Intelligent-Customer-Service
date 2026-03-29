@@ -1,0 +1,30 @@
+{
+  "name": "customer-service-api",
+  "version": "1.0.0",
+  "description": "智能客服 RESTful API 版本",
+  "main": "api-server.js",
+  "scripts": {
+    "start": "node api-server.js",
+    "dev": "nodemon api-server.js",
+    "test": "node test-api.js"
+  },
+  "keywords": [
+    "api",
+    "rest",
+    "websocket",
+    "customer-service"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "jsonwebtoken": "^9.0.0",
+    "express-rate-limit": "^6.7.0",
+    "helmet": "^7.0.0",
+    "ws": "^8.13.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

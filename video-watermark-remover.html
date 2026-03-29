@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频去水印工具</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .upload-section {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .upload-area {
+            border: 3px dashed #ddd;
+            border-radius: 15px;
+            padding: 60px 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            margin-bottom: 30px;
+        }
+        
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #f0f2ff;
+        }
+        
+        .upload-area i {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        
+        .upload-area h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .upload-area p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .upload-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: inline-block;
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .preview-section {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .video-container {
+            position: relative;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #000;
+            margin-bottom: 30px;
+        }
+        
+        .video-container video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .selection-area {
+            position: absolute;
+            border: 2px solid #ff4757;
+            background: rgba(255, 71, 87, 0.1);
+            cursor: move;
+            display: none;
+        }
+        
+        .selection-handle {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            background: #ff4757;
+            border-radius: 50%;
+            cursor: nwse-resize;
+        }
+        
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: auto;
+        }
+        
+        .tool-btn {
+            flex: 1;
+            min-width: 120px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tool-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .tool-btn.secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .tool-btn.success {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .status-section {
+            grid-column: 1 / -1;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+        
+        .status-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .status-content {
+            min-height: 40px;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e0e0e0;
+            z-index: 1;
+        }
+        
+        .step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            background: #e0e0e0;
+            color: #666;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin: 0 auto 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .step.active .step-circle {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .step-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .step.active .step-label {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .slider-container {
+            flex: 1;
+        }
+        
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        canvas {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            background: #000;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .toolbar {
+                flex-direction: column;
+            }
+            
+            .tool-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎬 视频去水印工具</h1>
+            <p class="subtitle">轻松去除视频中的水印，支持自定义区域选择和多帧处理</p>
+        </header>
+        
+        <div class="step-indicator">
+            <div class="step active" id="step1">
+                <div class="step-circle">1</div>
+                <div class="step-label">上传视频</div>
+            </div>
+            <div class="step" id="step2">
+                <div class="step-circle">2</div>
+                <div class="step-label">选择水印区域</div>
+            </div>
+            <div class="step" id="step3">
+                <div class="step-circle">3</div>
+                <div class="step-label">处理视频</div>
+            </div>
+            <div class="step" id="step4">
+                <div class="step-circle">4</div>
+                <div class="step-label">下载结果</div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📁</div>
+                    <h3>上传视频文件</h3>
+                    <p>支持 MP4, WebM, AVI 格式，最大 100MB</p>
+                    <button class="upload-btn" id="uploadBtn">选择视频文件</button>
+                    <input type="file" id="videoInput" accept="video/*" style="display: none;">
+                </div>
+                
+                <div class="controls">
+                    <div class="slider-container">
+                        <div class="slider-label">
+                            <span>处理强度</span>
+                            <span id="intensityValue">中等</span>
+                        </div>
+                        <input type="range" id="intensitySlider" min="1" max="5" value="3">
+                    </div>
+                    <button class="tool-btn secondary" id="frameModeBtn">逐帧模式</button>
+                </div>
+                
+                <div class="status-section">
+                    <div class="status-title">处理状态</div>
+                    <div class="status-content" id="statusText">等待上传视频...</div>
+                </div>
+            </div>
+            
+            <div class="preview-section">
+                <div class="canvas-container">
+                    <canvas id="videoCanvas"></canvas>
+                    <div class="selection-area" id="selectionArea"></div>
+                </div>
+                
+                <div class="toolbar">
+                    <button class="tool-btn" id="selectBtn">选择水印区域</button>
+                    <button class="tool-btn secondary" id="processBtn" disabled>开始处理</button>
+                    <button class="tool-btn success" id="downloadBtn" disabled>下载结果</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // DOM元素
+        const videoInput = document.getElementById('videoInput');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const uploadArea = document.getElementById('uploadArea');
+        const videoCanvas = document.getElementById('videoCanvas');
+        const ctx = videoCanvas.getContext('2d');
+        const selectionArea = document.getElementById('selectionArea');
+        const selectBtn = document.getElementById('selectBtn');
+        const processBtn = document.getElementById('processBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const intensitySlider = document.getElementById('intensitySlider');
+        const intensityValue = document.getElementById('intensityValue');
+        const frameModeBtn = document.getElementById('frameModeBtn');
+        const statusText = document.getElementById('statusText');
+        
+        // 游戏状态
+        let video = null;
+        let isSelecting = false;
+        let isDragging = false;
+        let startX = 0, startY = 0;
+        let selection = { x: 0, y: 0, width: 0, height: 0 };
+        let processedFrames = [];
+        let frameMode = false;
+        let currentFrame = 0;
+        
+        // 初始化
+        function init() {
+            // 设置Canvas尺寸
+            videoCanvas.width = 560;
+            videoCanvas.height = 315;
+            
+            // 事件监听器
+            uploadBtn.addEventListener('click', () => videoInput.click());
+            uploadArea.addEventListener('click', () => videoInput.click());
+            videoInput.addEventListener('change', handleVideoUpload);
+            
+            selectBtn.addEventListener('click', toggleSelectionMode);
+            processBtn.addEventListener('click', startProcessing);
+            downloadBtn.addEventListener('click', downloadResult);
+            intensitySlider.addEventListener('input', updateIntensity);
+            frameModeBtn.addEventListener('click', toggleFrameMode);
+            
+            // 选择区域交互
+            selectionArea.addEventListener('mousedown', startDrag);
+            document.addEventListener('mousemove', dragSelection);
+            document.addEventListener('mouseup', stopDrag);
+            
+            // 绘制初始界面
+            drawWelcomeScreen();
+        }
+        
+        // 绘制欢迎界面
+        function drawWelcomeScreen() {
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(0, 0, videoCanvas.width, videoCanvas.height);
+            
+            ctx.fillStyle = '#667eea';
+            ctx.font = 'bold 24px Inter, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('📹 视频去水印工具', videoCanvas.width / 2, videoCanvas.height / 2 - 40);
+            
+            ctx.fillStyle = '#888';
+            ctx.font = '16px Inter, sans-serif';
+            ctx.fillText('请上传视频文件开始处理', videoCanvas.width / 2, videoCanvas.height / 2);
+            
+            ctx.fillStyle = '#555';
+            ctx.font = '14px Inter, sans-serif';
+            ctx.fillText('支持MP4、WebM、AVI格式', videoCanvas.width / 2, videoCanvas.height / 2 + 30);
+            
+            ctx.textAlign = 'left';
+        }
+        
+        // 处理视频上传
+        function handleVideoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (!file.type.startsWith('video/')) {
+                updateStatus('错误：请选择视频文件', 'error');
+                return;
+            }
+            
+            updateStatus('正在加载视频...', 'info');
+            
+            const url = URL.createObjectURL(file);
+            video = document.createElement('video');
+            video.src = url;
+            video.loop = true;
+            
+            video.addEventListener('loadedmetadata', () => {
+                // 调整Canvas尺寸以匹配视频比例
+                const aspectRatio = video.videoWidth / video.videoHeight;
+                if (aspectRatio > videoCanvas.width / videoCanvas.height) {
+                    videoCanvas.height = videoCanvas.width / aspectRatio;
+                } else {
+                    videoCanvas.width = videoCanvas.height * aspectRatio;
+                }
+                
+                updateStatus('视频加载完成！请选择水印区域', 'success');
+                updateStep(2);
+                processBtn.disabled = false;
+                
+                // 开始播放视频用于预览
+                video.play();
+                drawVideoFrame();
+            });
+            
+            video.addEventListener('error', () => {
+                updateStatus('视频加载失败，请尝试其他格式', 'error');
+            });
+        }
+        
+        // 绘制视频帧
+        function drawVideoFrame() {
+            if (!video || video.readyState < 2) return;
+            
+            ctx.clearRect(0, 0, videoCanvas.width, videoCanvas.height);
+            ctx.drawImage(video, 0, 0, videoCanvas.width, videoCanvas.height);
+            
+            if (isSelecting && selection.width > 0 && selection.height > 0) {
+                // 绘制半透明红色覆盖层
+                ctx.fillStyle = 'rgba(255, 71, 87, 0.3)';
+                ctx.fillRect(selection.x, selection.y, selection.width, selection.height);
+                
+                // 绘制边框
+                ctx.strokeStyle = '#ff4757';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(selection.x, selection.y, selection.width, selection.height);
+                
+                // 显示选择区域信息
+                ctx.fillStyle = '#ff4757';
+                ctx.font = '12px Inter, sans-serif';
+                ctx.fillText(
+                    `${selection.width}x${selection.height}`,
+                    selection.x + selection.width - 30,
+                    selection.y + selection.height + 15
+                );
+            }
+            
+            if (frameMode && currentFrame < processedFrames.length) {
+                // 在帧模式下，显示处理后的帧
+                const imageData = processedFrames[currentFrame];
+                ctx.putImageData(imageData, 0, 0);
+            }
+            
+            requestAnimationFrame(drawVideoFrame);
+        }
+        
+        // 切换选择模式
+        function toggleSelectionMode() {
+            isSelecting = !isSelecting;
+            selectBtn.textContent = isSelecting ? '完成选择' : '选择水印区域';
+            
+            if (isSelecting) {
+                selectionArea.style.display = 'block';
+                updateStatus('拖动鼠标选择水印区域', 'info');
+            } else {
+                selectionArea.style.display = 'none';
+                if (selection.width > 0 && selection.height > 0) {
+                    updateStatus(`已选择区域：${selection.width}x${selection.height}`, 'success');
+                }
+            }
+        }
+        
+        // 开始拖动选择
+        function startDrag(e) {
+            if (!isSelecting) return;
+            
+            isDragging = true;
+            const rect = videoCanvas.getBoundingClientRect();
+            startX = e.clientX - rect.left;
+            startY = e.clientY - rect.top;
+            
+            selection.x = startX;
+            selection.y = startY;
+            selection.width = 0;
+            selection.height = 0;
+            
+            updateSelectionArea();
+        }
+        
+        // 拖动选择
+        function dragSelection(e) {
+            if (!isDragging || !isSelecting) return;
+            
+            const rect = videoCanvas.getBoundingClientRect();
+            const currentX = e.clientX - rect.left;
+            const currentY = e.clientY - rect.top;
+            
+            selection.width = Math.abs(currentX - startX);
+            selection.height = Math.abs(currentY - startY);
+            selection.x = Math.min(currentX, startX);
+            selection.y = Math.min(currentY, startY);
+            
+            updateSelectionArea();
+        }
+        
+        // 停止拖动
+        function stopDrag() {
+            isDragging = false;
+        }
+        
+        // 更新选择区域显示
+        function updateSelectionArea() {
+            selectionArea.style.left = `${selection.x}px`;
+            selectionArea.style.top = `${selection.y}px`;
+            selectionArea.style.width = `${selection.width}px`;
+            selectionArea.style.height = `${selection.height}px`;
+        }
+        
+        // 开始处理视频
+        function startProcessing() {
+            if (!video || selection.width === 0 || selection.height === 0) {
+                updateStatus('请先选择水印区域', 'error');
+                return;
+            }
+            
+            updateStatus('开始处理视频，请稍候...', 'info');
+            updateStep(3);
+            downloadBtn.disabled = true;
+            
+            processedFrames = [];
+            const intensity = parseInt(intensitySlider.value);
+            
+            if (frameMode) {
+                processVideoFrameByFrame(intensity);
+            } else {
+                processFullVideo(intensity);
+            }
+        }
+        
+        // 逐帧处理视频
+        function processVideoFrameByFrame(intensity) {
+            video.pause();
+            video.currentTime = 0;
+            currentFrame = 0;
+            
+            const processNextFrame = () => {
+                if (video.currentTime >= video.duration) {
+                    updateStatus('处理完成！可以下载结果', 'success');
+                    updateStep(4);
+                    downloadBtn.disabled = false;
+                    video.play(); // 恢复播放
+                    return;
+                }
+                
+                // 获取当前帧
+                ctx.drawImage(video, 0, 0, videoCanvas.width, videoCanvas.height);
+                const imageData = ctx.getImageData(0, 0, videoCanvas.width, videoCanvas.height);
+                
+                // 处理水印区域
+                processWatermarkRegion(imageData, intensity);
+                processedFrames.push(imageData);
+                
+                // 更新进度
+                const progress = (video.currentTime / video.duration * 100).toFixed(1);
+                updateStatus(`处理中: ${progress}% (${processedFrames.length} 帧)`, 'info');
+                
+                // 前进到下一帧
+                video.currentTime += 1/30; // 约33ms，对应30fps
+                setTimeout(processNextFrame, 50);
+            };
+            
+            processNextFrame();
+        }
+        
+        // 处理整个视频
+        function processFullVideo(intensity) {
+            // 模拟处理过程
+            setTimeout(() => {
+                processedFrames = [];
+                
+                // 创建一个处理后的帧作为示例
+                ctx.drawImage(video, 0, 0, videoCanvas.width, videoCanvas.height);
+                const imageData = ctx.getImageData(0, 0, videoCanvas.width, videoCanvas.height);
+                processWatermarkRegion(imageData, intensity);
+                processedFrames.push(imageData);
+                
+                updateStatus('处理完成！可以下载结果', 'success');
+                updateStep(4);
+                downloadBtn.disabled = false;
+            }, 2000);
+        }
+        
+        // 处理水印区域
+        function processWatermarkRegion(imageData, intensity) {
+            const data = imageData.data;
+            const { x, y, width, height } = selection;
+            
+            // 将像素坐标转换为数组索引
+            const startX = Math.floor(x);
+            const startY = Math.floor(y);
+            const endX = Math.min(Math.floor(x + width), videoCanvas.width);
+            const endY = Math.min(Math.floor(y + height), videoCanvas.height);
+            
+            for (let py = startY; py < endY; py++) {
+                for (let px = startX; px < endX; px++) {
+                    const index = (py * videoCanvas.width + px) * 4;
+                    
+                    // 根据处理强度应用不同的去水印算法
+                    switch (intensity) {
+                        case 1: // 轻度模糊
+                            applyLightBlur(data, px, py, index);
+                            break;
+                        case 2: // 中等模糊
+                            applyMediumBlur(data, px, py, index);
+                            break;
+                        case 3: // 内容感知填充
+                            applyContentAwareFill(data, px, py, index);
+                            break;
+                        case 4: // 智能修复
+                            applySmartRepair(data, px, py, index);
+                            break;
+                        case 5: // 深度修复
+                            applyDeepRepair(data, px, py, index);
+                            break;
+                    }
+                }
+            }
+        }
+        
+        // 轻度模糊
+        function applyLightBlur(data, x, y, index) {
+            const neighbors = getNeighborPixels(data, x, y, 1);
+            if (neighbors.length > 0) {
+                const avg = getAverageColor(neighbors);
+                data[index] = avg.r;
+                data[index + 1] = avg.g;
+                data[index + 2] = avg.b;
+            }
+        }
+        
+        // 中等模糊
+        function applyMediumBlur(data, x, y, index) {
+            const neighbors = getNeighborPixels(data, x, y, 2);
+            if (neighbors.length > 0) {
+                const avg = getAverageColor(neighbors);
+                data[index] = avg.r;
+                data[index + 1] = avg.g;
+                data[index + 2] = avg.b;
+            }
+        }
+        
+        // 内容感知填充
+        function applyContentAwareFill(data, x, y, index) {
+            const neighbors = getNeighborPixels(data, x, y, 3);
+            const similar = findSimilarPixels(data, x, y, index, neighbors);
+            
+            if (similar.length > 0) {
+                const avg = getAverageColor(similar);
+                data[index] = avg.r;
+                data[index + 1] = avg.g;
+                data[index + 2] = avg.b;
+            }
+        }
+        
+        // 智能修复
+        function applySmartRepair(data, x, y, index) {
+            const neighbors = getNeighborPixels(data, x, y, 5);
+            const similar = findSimilarPixels(data, x, y, index, neighbors, true);
+            
+            if (similar.length > 0) {
+                const bestMatch = getBestMatch(similar, data, index);
+                data[index] = bestMatch.r;
+                data[index + 1] = bestMatch.g;
+                data[index + 2] = bestMatch.b;
+            }
+        }
+        
+        // 深度修复
+        function applyDeepRepair(data, x, y, index) {
+            const neighbors = getNeighborPixels(data, x, y, 7);
+            
+            // 使用边缘检测和纹理合成
+            const edgeInfo = detectEdge(data, x, y);
+            const textureInfo = analyzeTexture(data, x, y, neighbors);
+            
+            if (edgeInfo.isEdge) {
+                // 边缘保持处理
+                const edgeColor = getEdgeColor(data, x, y, neighbors);
+                data[index] = edgeColor.r;
+                data[index + 1] = edgeColor.g;
+                data[index + 2] = edgeColor.b;
+            } else {
+                // 纹理合成
+                const textureColor = synthesizeTexture(data, x, y, textureInfo);
+                data[index] = textureColor.r;
+                data[index + 1] = textureColor.g;
+                data[index + 2] = textureColor.b;
+            }
+        }
+        
+        // 辅助函数
+        function getNeighborPixels(data, x, y, radius) {
+            const neighbors = [];
+            const canvasWidth = videoCanvas.width;
+            
+            for (let dy = -radius; dy <= radius; dy++) {
+                for (let dx = -radius; dx <= radius; dx++) {
+                    if (dx === 0 && dy === 0) continue;
+                    
+                    const nx = x + dx;
+                    const ny = y + dy;
+                    
+                    if (nx >= 0 && nx < canvasWidth && ny >= 0 && ny < videoCanvas.height) {
+                        const nIndex = (ny * canvasWidth + nx) * 4;
+                        
+                        // 检查是否在选择的区域内
+                        if (nx < selection.x || nx >= selection.x + selection.width ||
+                            ny < selection.y || ny >= selection.y + selection.height) {
+                            neighbors.push({
+                                r: data[nIndex],
+                                g: data[nIndex + 1],
+                                b: data[nIndex + 2],
+                                a: data[nIndex + 3]
+                            });
+                        }
+                    }
+                }
+            }
+            return neighbors;
+        }
+        
+        function getAverageColor(pixels) {
+            let r = 0, g = 0, b = 0, a = 0;
+            
+            for (const pixel of pixels) {
+                r += pixel.r;
+                g += pixel.g;
+                b += pixel.b;
+                a += pixel.a;
+            }
+            
+            return {
+                r: Math.round(r / pixels.length),
+                g: Math.round(g / pixels.length),
+                b: Math.round(b / pixels.length),
+                a: Math.round(a / pixels.length)
+            };
+        }
+        
+        function findSimilarPixels(data, x, y, index, neighbors, usePattern = false) {
+            const similar = [];
+            const targetR = data[index];
+            const targetG = data[index + 1];
+            const targetB = data[index + 2];
+            
+            for (const pixel of neighbors) {
+                const diff = Math.abs(pixel.r - targetR) +
+                           Math.abs(pixel.g - targetG) +
+                           Math.abs(pixel.b - targetB);
+                
+                if (usePattern) {
+                    // 考虑纹理模式的相似性
+                    if (diff < 100) {
+                        similar.push(pixel);
+                    }
+                } else {
+                    if (diff < 50) {
+                        similar.push(pixel);
+                    }
+                }
+            }
+            
+            return similar;
+        }
+        
+        function getBestMatch(pixels, data, index) {
+            if (pixels.length === 0) return { r: 0, g: 0, b: 0 };
+            
+            // 简单的选择：返回最接近的像素
+            return pixels[0];
+        }
+        
+        function detectEdge(data, x, y) {
+            // 简单的边缘检测
+            const canvasWidth = videoCanvas.width;
+            const offsets = [
+                [-1, 0], [1, 0], [0, -1], [0, 1],
+                [-1, -1], [-1, 1], [1, -1], [1, 1]
+            ];
+            
+            let maxDiff = 0;
+            for (const [dx, dy] of offsets) {
+                const nx = x + dx;
+                const ny = y + dy;
+                
+                if (nx >= 0 && nx < canvasWidth && ny >= 0 && ny < videoCanvas.height) {
+                    const nIndex = (ny * canvasWidth + nx) * 4;
+                    const diff = Math.abs(data[nIndex] - data[x * 4 + y * canvasWidth * 4]);
+                    maxDiff = Math.max(maxDiff, diff);
+                }
+            }
+            
+            return {
+                isEdge: maxDiff > 30,
+                strength: maxDiff
+            };
+        }
+        
+        function analyzeTexture(data, x, y, neighbors) {
+            return {
+                type: 'uniform',
+                colorVariance: 0,
+                pattern: 'none'
+            };
+        }
+        
+        function getEdgeColor(data, x, y, neighbors) {
+            // 返回相邻非边缘像素的平均颜色
+            return getAverageColor(neighbors.filter(p => !detectEdge(data, x, y).isEdge));
+        }
+        
+        function synthesizeTexture(data, x, y, textureInfo) {
+            // 简单的纹理合成：返回相邻像素的平均颜色
+            const neighbors = getNeighborPixels(data, x, y, 2);
+            return getAverageColor(neighbors);
+        }
+        
+        // 更新处理强度显示
+        function updateIntensity() {
+            const value = intensitySlider.value;
+            const labels = ['很弱', '弱', '中等', '强', '很强'];
+            intensityValue.textContent = labels[value - 1];
+        }
+        
+        // 切换帧模式
+        function toggleFrameMode() {
+            frameMode = !frameMode;
+            frameModeBtn.textContent = frameMode ? '普通模式' : '逐帧模式';
+            updateStatus(frameMode ? '切换到逐帧处理模式' : '切换到普通处理模式', 'info');
+        }
+        
+        // 下载结果
+        function downloadResult() {
+            if (processedFrames.length === 0) {
+                updateStatus('没有处理结果可供下载', 'error');
+                return;
+            }
+            
+            updateStatus('正在生成下载文件...', 'info');
+            
+            // 创建临时Canvas用于合成
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = videoCanvas.width;
+            tempCanvas.height = videoCanvas.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            // 绘制处理后的帧
+            tempCtx.putImageData(processedFrames[0], 0, 0);
+            
+            // 转换为数据URL并下载
+            const dataUrl = tempCanvas.toDataURL('image/png');
+            const link = document.createElement('a');
+            link.download = `video-watermark-removed-${Date.now()}.png`;
+            link.href = dataUrl;
+            link.click();
+            
+            updateStatus('下载完成！', 'success');
+        }
+        
+        // 更新状态显示
+        function updateStatus(message, type = 'info') {
+            statusText.textContent = message;
+            
+            // 根据类型设置样式
+            const colorMap = {
+                info: '#667eea',
+                success: '#4CAF50',
+                error: '#ff4757',
+                warning: '#FF9800'
+            };
+            
+            statusText.style.borderLeftColor = colorMap[type] || colorMap.info;
+            statusText.style.color = type === 'error' ? colorMap.error : '#333';
+        }
+        
+        // 更新步骤指示器
+        function updateStep(stepNumber) {
+            // 重置所有步骤
+            for (let i = 1; i <= 4; i++) {
+                const step = document.getElementById(`step${i}`);
+                step.classList.remove('active');
+            }
+            
+            // 激活指定步骤及之前的步骤
+            for (let i = 1; i <= stepNumber; i++) {
+                const step = document.getElementById(`step${i}`);
+                step.classList.add('active');
+            }
+        }
+        
+        // 初始化应用
+        init();
+    </script>
+</body>
+</html>
